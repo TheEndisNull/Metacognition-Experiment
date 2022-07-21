@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../jspsych.js"></script>
+  <script src="../plugins/jspsych-psychophysics.js"></script>
+  <script src="../plugins/jspsych-html-keyboard-response.js"></script>
+  <link rel="stylesheet" href="../css/jspsych.css"></link>
+  <style>
+    p {
+        color: white;
+    }
+    body {
+      background-color: black;
+    }
+  </style>
+</head>
+<body></body>
+<script>
+    var instruction = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>This program uses the jspsych-psychophysics plugin.</p><p>Press any key to start.</p>'
+    }
+
+    var experiment = [];
+    experiment.push(instruction);
+
+    sounds = [
+        './sound/tone100ms.wav'
+    ];
+    
+    rect1 = {
+        type: 'rect',
+        startX: 300,
+        startY: 200,
+        width: 100,
+        height: 100,
+        fill_color: 'white',
+        show_start_time: 100,
+        show_end_time: 600,
+    }
+
+    for (let phase = 0; phase < 5; phase++){
+        for (let repeat = 0; repeat < 100; repeat++){
+
+            if (phase == 0){
+                sound_start_time = 100;
+            } else if (phase == 1){ // The rect1 is presented for 150ms. The rect2 is presented 20 ms after the onset of the rect1 for 20 ms.
+                sound_start_time = 120;
+            } else if (phase == 2){ // The rect1 is presented for 150ms. The rect2 is presented 50 ms after the onset of the rect1 for 20 ms.
+                sound_start_time = 150;
+            } else if (phase == 3){ // The rect1 is presented for 150ms. The rect2 is presented 150 ms after the onset of the rect1 for 20 ms.
+                sound_start_time = 250;
+            } else { // The rect1 is presented for 150ms. The rect2 is presented 500 ms after the onset of the rect1 for 20 ms.
+                sound_start_time = 600;
+            }
+
+            var sound_object = {
+                type: 'sound',
+                file: sounds[0],
+                show_start_time: sound_start_time,
+            }
+
+            const trial_time = (sound_start_time === 600) ? 800 : 700;
+
+            var show_rect_sound = {
+                type: 'psychophysics',
+                stimuli: [rect1, sound_object],
+                trial_duration: trial_time,
+                response_ends_trial: false,
+                background_color: 'black',
+                canvas_width: 900,
+                canvas_height: 600,
+            }
+
+            experiment.push(show_rect_sound);
+        }
+    }
+
+    var end_trial = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>The program is finished.</p>'
+    }
+
+    experiment.push(end_trial)
+    
+    jsPsych.init({
+        timeline: experiment,
+        preload_audio: sounds,
+        on_finish: function() {
+            jsPsych.data.displayData();
+        },
+    });
+</script>
+
+</html>

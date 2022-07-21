@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../jspsych.js"></script>
+    <script src="../plugins/jspsych-audio-keyboard-response.js"></script>
+    <script src="../plugins/jspsych-html-button-response.js"></script>
+    <script src="../plugins/jspsych-html-keyboard-response.js"></script>
+    <link rel="stylesheet" href="../css/jspsych.css"></link>
+    <style>
+        p {
+            color: white;
+        }
+        body {
+          background-color: black;
+        }
+      </style>
+  </head>
+  <body></body>
+  <script>
+
+  instruction = {
+    type: 'html-button-response',
+    stimulus: '<p>Recent versions of Chrome require the user to interact with a page before it can play audio. '+
+    'Clicking the button below counts as an interaction. Be aware of this when planning audio experiments if '+
+    'you want the first trial to include audio.</p>',
+    choices: ['Continue']
+  };
+
+  audio_trial = {
+    type: 'audio-keyboard-response',
+    stimulus: './sound/tone100ms.wav',
+    prompt: '<img src="white-rect.jpg">', 
+    trial_ends_after_audio: true,
+    choices: [' ', ' ', ' '],
+  };
+
+  var blank = {
+    type: 'html-keyboard-response',
+    stimulus: '',
+    trial_duration: 100,
+    response_ends_trial: false,
+  }
+
+  var end_trial = {
+    type: 'html-keyboard-response',
+    stimulus: '<p>The program is finished.</p>'
+  }
+
+  trials = {
+    timeline: [blank, audio_trial, blank],  
+    repetitions: 100,
+  }
+
+
+  jsPsych.init({
+    timeline: [instruction, trials, end_trial],
+    preload_audio: ['./sound/tone100ms.wav'],
+    preload_images: ['white-rect.jpg'],
+    // use_webaudio: false,
+    use_webaudio: true,
+    on_finish: function(){jsPsych.data.displayData();}
+  });
+
+  </script>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../jspsych.js"></script>
+    <script src="../plugins/jspsych-audio-button-response.js"></script>
+    <script src="../plugins/jspsych-html-button-response.js"></script>
+    <script src="../plugins/jspsych-html-keyboard-response.js"></script>
+    <link rel="stylesheet" href="../css/jspsych.css"></link>
+    <style>
+        p {
+            color: white;
+        }
+        body {
+          background-color: black;
+        }
+      </style>
+  </head>
+  <body></body>
+  <script>
+
+  instruction = {
+    type: 'html-button-response',
+    stimulus: '<p>Recent versions of Chrome require the user to interact with a page before it can play audio. '+
+    'Clicking the button below counts as an interaction. Be aware of this when planning audio experiments if '+
+    'you want the first trial to include audio.</p>',
+    choices: ['Continue']
+  };
+
+  rect_trial = {
+    type: 'html-keyboard-response',
+    // stimulus: '<canvas id="myCanvas" width=' + window.innerWidth + ' height=' + window.innerWidth + ' style="background-color: black;"></canvas>',
+    stimulus: '<canvas id="myCanvas" width="900" height="600" style="background-color: black;"></canvas>',
+    response_ends_trial: false,
+    trial_duration: 500,
+    on_load: function(){
+        const canvas = document.getElementById('myCanvas');
+        if ( ! canvas || ! canvas.getContext ) {
+            alert('This browser does not support the canvas element.');
+            return;
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.fillStyle = 'white';
+        // rect1
+        ctx.fillRect(250, 150, 100, 100); 
+    }
+  }
+
+  audio_trial = {
+    type: 'audio-button-response',
+    stimulus: './sound/tone100ms.wav',
+    trial_ends_after_audio: true,
+    choices: [' ', ' ', ' '],
+  };
+
+  var blank = {
+    type: 'html-keyboard-response',
+    stimulus: '',
+    trial_duration: 100,
+    response_ends_trial: false,
+  }
+
+  var end_trial = {
+    type: 'html-keyboard-response',
+    stimulus: '<p>The program is finished.</p>'
+  }
+
+  trials = {
+    timeline: [blank, rect_trial, audio_trial, blank],  
+    repetitions: 100,
+  }
+
+
+  jsPsych.init({
+    timeline: [instruction, trials, end_trial],
+    use_webaudio: false,
+    on_finish: function(){jsPsych.data.displayData();}
+  });
+
+  </script>
+</html>

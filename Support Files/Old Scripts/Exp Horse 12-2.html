@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/plugin-html-button-response.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-psychophysics.js"></script>
+   <script type="text/javascript" src="HorseAnimation.js"></script>
+    <script type="text/javascript" src="TxtBoxes.js"></script>
+
+    <link rel="stylesheet" href="jsPsych-psychophysics-master/css/jspsychTEST.css">
+</head>
+
+<body></body>
+<script>
+
+
+    /*
+    10-21:  Created function to determine whether H1 or H2 wins
+            Updated function to allow 2 uses to guess who wins with prob set by timeline variable
+  
+    10-22:  Added instructions
+            Reverted from jsPsych 7.0 to 6.3.1
+            Added psychophysics plugin
+            Added basic horse race stimulus
+  
+    10-25:  Updated horse race stimulus
+
+    11-16:  Updated stimuli to scale with window size
+    11-16:  Replacing Keyboard input with buttons
+  
+    To Do:  Finalize horse race stimulus
+            Connect outcome variable to outcome
+    */
+
+    /*
+    X 1920: 960
+    Y 1080: 540
+    */
+
+    var jsPsych = initJsPsych({
+        use_webaudio: false,
+        on_finish: function () {
+            jsPsych.data.displayData();
+        }
+    });
+
+    var trial = {
+        timeline: [
+            {
+                type: jsPsychPsychophysics,
+                stimuli: raceStart,
+                response_type: 'key',
+                key_press: ['1', '2'],
+                canvas_width: wd,
+                canvas_height: ht,
+                background_color: 'white',
+                data: jsPsych.timelineVariable('data'),
+                on_finish: function (data) {
+                    if (data.response == null) {
+                        data.correct = null
+                    } else if (data.outcome == data.response) {
+                        data.correct = true
+                    } else if (data.outcome != data.response) {
+                        data.correct = false
+                    }
+                    data.winner = data.outcome
+                }
+            }, {
+                type: jsPsychPsychophysics,
+                stimuli: function (data) {
+                    if (jsPsych.data.getLastTrialData().values()[0].correct == true) {
+                        if (jsPsych.data.getLastTrialData().values()[0].outcome == 1) {
+                            return h1cor
+                        } else {
+                            return h2cor
+                        }
+                    } else if (jsPsych.data.getLastTrialData().values()[0].correct == false) {
+                        if (jsPsych.data.getLastTrialData().values()[0].outcome == 1) {
+                            return h1wrg
+                        } else {
+                            return h2wrg
+                        }
+                    }
+                },
+                data: jsPsych.timelineVariable('data'),
+                canvas_width: wd,
+                canvas_height: ht * .9,
+                background_color: 'white',
+            }
+        ],
+        timeline_variables: [
+            { person1: getBet(1, 1), person2: getBet(1, 1), data: { outcome: 1 } },
+            { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } },
+            { person1: getBet(1, 1), person2: getBet(0, 2), data: { outcome: 1 } },
+            { person1: getBet(1, 1), person2: getBet(1, 2), data: { outcome: 2 } },
+            { person1: getBet(0, 1), person2: getBet(1, 2), data: { outcome: 2 } },
+
+
+        ]
+    }
+
+    jsPsych.run(trial);
+
+
+</script>
+
+</html>

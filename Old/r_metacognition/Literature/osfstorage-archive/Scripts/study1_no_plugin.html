@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../jspsych.js"></script>
+  <script src="../plugins/jspsych-html-keyboard-response.js"></script>
+  <link rel="stylesheet" href="../css/jspsych.css"></link>
+  <style>
+    p {
+        color: white;
+    }
+    body {
+      background-color: black;
+    }
+  </style>
+</head>
+<body></body>
+<script>
+    var instruction = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>This program uses the jspsych-native methods</p><p>Press any key to start.</p>'
+    }
+
+    var experiment = [];
+    experiment.push(instruction);
+
+    var blank = {
+        type: 'html-keyboard-response',
+        stimulus: '',
+        trial_duration: 100,
+        response_ends_trial: false,
+    }
+
+    for (let phase = 0; phase < 8; phase++){
+        for (let repeat = 0; repeat < 100; repeat++){
+
+            if (phase == 0){ // The rect1 is presented for 150ms. The rect2 is presented 20 ms after the onset of the rect1 for 20 ms.
+                time_rect1_1 = 20;
+                time_rect1and2 = 20;
+                time_no_rectangles = 0;
+                time_rect1_2 = 110;
+                time_rect2 = 0;
+            } else if (phase == 1){ // The rect1 is presented for 150ms. The rect2 is presented 50 ms after the onset of the rect1 for 20 ms.
+                time_rect1_1 = 50;
+                time_rect1and2 = 20;
+                time_no_rectangles = 0;
+                time_rect1_2 = 80;
+                time_rect2 = 0;
+            } else if (phase == 2){ // The rect1 is presented for 150ms. The rect2 is presented 150 ms after the onset of the rect1 for 20 ms.
+                time_rect1_1 = 150;
+                time_rect1and2 = 0;
+                time_no_rectangles = 0;
+                time_rect1_2 = 0;
+                time_rect2 = 20;
+            } else if (phase == 3){ // The rect1 is presented for 150ms. The rect2 is presented 500 ms after the onset of the rect1 for 20 ms.
+                time_rect1_1 = 150;
+                time_rect1and2 = 0;
+                time_no_rectangles = 350;
+                time_rect1_2 = 0;
+                time_rect2 = 20;
+            } else if (phase == 4){ // The rect1 is presented for 500ms. The rect2 is presented 20 ms after the onset of the rect1 for 50 ms.
+                time_rect1_1 = 20;
+                time_rect1and2 = 50;
+                time_no_rectangles = 0;
+                time_rect1_2 = 430;
+                time_rect2 = 0;
+            } else if (phase == 5){ // The rect1 is presented for 500ms. The rect2 is presented 50 ms after the onset of the rect1 for 50 ms.
+                time_rect1_1 = 50;
+                time_rect1and2 = 50;
+                time_no_rectangles = 0;
+                time_rect1_2 = 400;
+                time_rect2 = 0;
+            } else if (phase == 6){ // The rect1 is presented for 500ms. The rect2 is presented 150 ms after the onset of the rect1 for 50 ms.
+                time_rect1_1 = 150;
+                time_rect1and2 = 50;
+                time_no_rectangles = 0;
+                time_rect1_2 = 300;
+                time_rect2 = 0;
+            } else { // The rect1 is presented for 500ms. The rect2 is presented 500 ms after the onset of the rect1 for 50 ms.
+                time_rect1_1 = 500;
+                time_rect1and2 = 0;
+                time_no_rectangles = 0;
+                time_rect1_2 = 0;
+                time_rect2 = 50;
+            }
+    
+            experiment.push(blank);
+
+            var rect1_trial1 = {
+                type: 'html-keyboard-response',
+                // stimulus: '<canvas id="myCanvas" width=' + window.innerWidth + ' height=' + window.innerWidth + ' style="background-color: black;"></canvas>',
+                stimulus: '<canvas id="myCanvas" width="900" height="600" style="background-color: black;"></canvas>',
+                response_ends_trial: false,
+                trial_duration: time_rect1_1,
+                on_load: function(){
+                    const canvas = document.getElementById('myCanvas');
+                    if ( ! canvas || ! canvas.getContext ) {
+                        alert('This browser does not support the canvas element.');
+                        return;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.beginPath();
+                    ctx.fillStyle = 'white';
+                    // rect1
+                    ctx.fillRect(250, 150, 100, 100); 
+                }
+            }
+
+            experiment.push(rect1_trial1);
+
+            var rect1and2_trial = {
+                type: 'html-keyboard-response',
+                // stimulus: '<canvas id="myCanvas" width=' + window.innerWidth + ' height=' + window.innerWidth + ' style="background-color: black;"></canvas>',
+                stimulus: '<canvas id="myCanvas" width="900" height="600" style="background-color: black;"></canvas>',
+                response_ends_trial: false,
+                trial_duration: time_rect1and2,
+                on_load: function(){
+                    const canvas = document.getElementById('myCanvas');
+                    if ( ! canvas || ! canvas.getContext ) {
+                        alert('This browser does not support the canvas element.');
+                        return;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.beginPath();
+                    ctx.fillStyle = 'white';
+                    // rect1
+                    ctx.fillRect(250, 150, 100, 100); 
+                    // rect2
+                    ctx.fillRect(750, 450, 100, 100); 
+                }
+            }
+
+            if (time_rect1and2 !== 0) experiment.push(rect1and2_trial);
+
+            var no_rectangles = {
+                type: 'html-keyboard-response',
+                // stimulus: '<canvas id="myCanvas" width=' + window.innerWidth + ' height=' + window.innerWidth + ' style="background-color: black;"></canvas>',
+                stimulus: '<canvas id="myCanvas" width="900" height="600" style="background-color: black;"></canvas>',
+                response_ends_trial: false,
+                trial_duration: time_no_rectangles,
+                on_load: function(){
+                    const canvas = document.getElementById('myCanvas');
+                    if ( ! canvas || ! canvas.getContext ) {
+                        alert('This browser does not support the canvas element.');
+                        return;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            if (time_no_rectangles !== 0) experiment.push(no_rectangles);
+
+            var rect1_trial2 = {
+                type: 'html-keyboard-response',
+                // stimulus: '<canvas id="myCanvas" width=' + window.innerWidth + ' height=' + window.innerWidth + ' style="background-color: black;"></canvas>',
+                stimulus: '<canvas id="myCanvas" width="900" height="600" style="background-color: black;"></canvas>',
+                response_ends_trial: false,
+                trial_duration: time_rect1_2,
+                on_load: function(){
+                    const canvas = document.getElementById('myCanvas');
+                    if ( ! canvas || ! canvas.getContext ) {
+                        alert('This browser does not support the canvas element.');
+                        return;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.beginPath();
+                    ctx.fillStyle = 'white';
+                    // rect1
+                    ctx.fillRect(250, 150, 100, 100); 
+                }
+            }
+
+            if (time_rect1_2 !== 0) experiment.push(rect1_trial2);
+
+            var rect2_trial = {
+                type: 'html-keyboard-response',
+                // stimulus: '<canvas id="myCanvas" width=' + window.innerWidth + ' height=' + window.innerWidth + ' style="background-color: black;"></canvas>',
+                stimulus: '<canvas id="myCanvas" width="900" height="600" style="background-color: black;"></canvas>',
+                response_ends_trial: false,
+                trial_duration: time_rect2,
+                on_load: function(){
+                    const canvas = document.getElementById('myCanvas');
+                    if ( ! canvas || ! canvas.getContext ) {
+                        alert('This browser does not support the canvas element.');
+                        return;
+                    }
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.beginPath();
+                    ctx.fillStyle = 'white';
+                    // rect2
+                    ctx.fillRect(750, 450, 100, 100); 
+                }
+            }
+
+            if (time_rect2 !== 0) experiment.push(rect2_trial);
+
+            experiment.push(blank);
+        }
+    }
+
+    var end_trial = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>The program is finished.</p>'
+    }
+
+    experiment.push(end_trial)
+    
+    jsPsych.init({
+        timeline: experiment,
+        on_finish: function() {
+            jsPsych.data.displayData();
+        },
+    });
+</script>
+
+</html>

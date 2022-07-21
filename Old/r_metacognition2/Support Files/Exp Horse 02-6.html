@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/plugin-html-button-response.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-psychophysics.js"></script>
+    <script type="text/javascript" src="HorseAnimation.js"></script>
+    <script type="text/javascript" src="TxtBoxes.js"></script>
+    <script></script>
+
+    <link rel="stylesheet" href="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.css">
+    </link>
+
+</head>
+
+<body></body>
+<script>
+
+    timeTest = [
+        { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } },
+        { person1: getBet(0, 2), person2: getBet(1, 2), data: { outcome: 1 } },
+        { person1: getBet(1, 1), person2: getBet(0, 2), data: { outcome: 1 } },
+        { person1: getBet(1, 2), person2: getBet(0, 1), data: { outcome: 2 } },
+        { person1: getBet(0, 1), person2: getBet(0, 1), data: { outcome: 2 } },
+    ]
+
+    const one = { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } }
+    const two = { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } }
+    timeTest = [
+        one, two
+    ]
+
+    function generateObject(var1, var2, var3) {
+
+        
+        const object = new Object()
+        object.person1 = var1
+        object.person2 = var2
+        object.data = {outcome: var3}
+        return object
+    }
+
+    timeTest2 = [generateObject('var1', 'var2',2),
+    generateObject('asdf', 'zxcv',1)]
+
+function testFunction(conf1, conf2, lo1, hi1) {
+    const object = new Object()
+    var randInt = Math.random() 
+    console.log('advisor 1: ' + randInt)
+    if(randInt > conf1) {
+        object.person1 = 'high'
+    } else {
+        object.person1 = 'low'
+    }
+
+    randInt = Math.random() 
+    console.log('advisor 2: ' + randInt)
+    if(randInt > conf2) {
+        object.person2 = 'high'
+    } else {
+        object.person2 = 'low'
+    }
+
+    if(object.person1 == 'high') {
+        object.data = {outcome: 'high confidence'}
+        randInt = Math.random() 
+        console.log('advisor 1 judgement: ' + randInt)
+        if(randInt < hi1) {
+            object.person1Corr = 'correct'
+        } else {
+            object.person1Corr = 'wrong'
+        }
+    } else {
+        object.data = {outcome: 'low confidence'}
+        randInt = Math.random() 
+        console.log('advisor 1 judgement: ' + randInt)
+        if(randInt < lo1) {
+            object.person1Corr = 'correct'
+        } else {
+            object.person1Corr = 'wrong'
+        }
+    }    
+
+    if(object.person2 == 'high') {
+        object.data = {outcome1: 'high confidence'}
+        randInt = Math.random() 
+        console.log('advisor 2 judgement: ' + randInt)
+        if(randInt < hi1) {
+            object.person2Corr = 'correct'
+        } else {
+            object.person2Corr = 'wrong'
+        }
+    } else {
+        object.data = {outcome2: 'low confidence'}
+        randInt = Math.random() 
+        console.log('advisor 2 judgement: ' + randInt)
+        if(randInt < lo1) {
+            object.person2Corr = 'correct'
+        } else {
+            object.person2Corr = 'wrong'
+        }
+    }    
+
+    console.log(object)
+    return object
+
+}
+
+testFunction(.5,.5,.2,.8)
+
+    var trial = {
+        timeline: [
+            {
+                type: jsPsychPsychophysics,
+                stimuli: raceStart,
+                response_type: 'key',
+                key_press: ['1', '2'],
+                canvas_width: wd,
+                canvas_height: ht,
+                background_color: 'white',
+                data: jsPsych.timelineVariable('data'),
+                on_finish: function (data) {
+                    if (data.response == null) {
+                        data.correct = null
+                    } else if (data.outcome == data.response) {
+                        data.correct = true
+                    } else if (data.outcome != data.response) {
+                        data.correct = false
+                    }
+                    data.winner = data.outcome
+                }
+            },{
+                type: jsPsychPsychophysics,
+                stimuli: function (data) {
+                    if (jsPsych.data.getLastTrialData().values()[0].correct == true) {
+                        if (jsPsych.data.getLastTrialData().values()[0].outcome == 1) {
+                            return h1cor
+                        } else {
+                            return h2cor
+                        }
+                    } else if (jsPsych.data.getLastTrialData().values()[0].correct == false) {
+                        if (jsPsych.data.getLastTrialData().values()[0].outcome == 1) {
+                            return h1wrg
+                        } else {
+                            return h2wrg
+                        }
+                    }
+                },
+                data: jsPsych.timelineVariable('data'),
+                canvas_width: wd,
+                canvas_height: ht * .9,
+                background_color: 'white',
+            }
+        ],
+        timeline_variables: timeTest2
+    }
+
+    jsPsych.run([trial])
+
+</script>
+
+</html>

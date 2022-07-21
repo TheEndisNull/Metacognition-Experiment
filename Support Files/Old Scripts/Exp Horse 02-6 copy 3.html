@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/plugin-html-button-response.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-psychophysics.js"></script>
+    <script type="text/javascript" src="HorseAnimation.js"></script>
+    <script type="text/javascript" src="TxtBoxes.js"></script>
+    <script></script>
+
+    <link rel="stylesheet" href="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.css">
+    </link>
+
+</head>
+
+<body></body>
+<script>
+    document.body.style.backgroundColor = "grey";
+
+    function getTrial(hWinner, conf1, conf2, lo1, hi1, lo2, hi2) {
+        //DETERMINE CONFIDENCE: HIGH (1) OR LOW (0)
+        //THEN DETERMINE RIGHT (1) OR WRONG (0)
+        var object = {
+            advL: 'I THINK\nhorse ',
+            advR: 'I THINK\nhorse ',
+            data: {
+                outcome: 1,
+                p1conf: 0,
+                p2conf: 0,
+                p1rslt: 0,
+                p2rslt: 0,
+            }
+        }
+
+        if (Math.random() < hWinner) {
+            object.data.outcome = 2
+        }
+        var horseRslt = [1, 2, 1]
+        //SETUP
+
+        if (Math.random() > conf1) {
+            object.data.p1conf = 1
+        }
+
+        if (Math.random() > conf2) {
+            object.data.p2conf = 1
+        }
+
+        if (object.data.p1conf) {
+            object.advL = "I'm SURE\nhorse "
+            if (Math.random() < hi1) {
+                object.data.p1rslt = 1
+                object.advL += horseRslt[object.data.outcome - 1] + ' will win'
+                object.advLsltTxt = 'I won!'
+            } else {
+                object.advL += horseRslt[object.data.outcome] + ' will win'
+                object.advLsltTxt = 'I lost...'
+            }
+        } else {
+            if (Math.random() < lo1) {
+                object.data.p1rslt = 1
+                object.advL += horseRslt[object.data.outcome - 1] + ' will win'
+                object.advLsltTxt = 'I won!'
+            } else {
+                object.advL += horseRslt[object.data.outcome] + ' will win'
+                object.advLsltTxt = 'I lost...'
+            }
+        }
+
+        if (object.data.p2conf) {
+            object.advR = "I'm SURE\nhorse "
+            if (Math.random() < hi2) {
+                object.data.p2rslt = 1
+                object.advR += horseRslt[object.data.outcome - 1] + ' will win'
+                object.advRsltTxt = 'I won!'
+
+            } else {
+                object.advR += horseRslt[object.data.outcome] + ' will win'
+                object.advRsltTxt = 'I lost...'
+
+            }
+        } else {
+            if (Math.random() < lo2) {
+                object.data.p2rslt = 1
+                object.advR += horseRslt[object.data.outcome - 1] + ' will win'
+                object.advRsltTxt = 'I won!'
+            } else {
+                object.advR += horseRslt[object.data.outcome] + ' will win'
+                object.advRsltTxt = 'I lost...'
+            }
+        }
+        return object
+    }
+
+    var arr = []
+    for (let i = 0; i < 10; i++) {
+        arr.push(getTrial(1, .5, .5, .01, .99, .5, .5))
+    }
+    console.log(arr)
+
+    var testvar = 0
+ 
+    var winScrn = {
+        timeline:[{
+        type: jsPsychPsychophysics,
+        data: jsPsych.timelineVariable('data'),
+        stimuli: rsltScreenWin,
+        canvas_width: wd,
+        canvas_height: ht,
+    }],
+        conditional_function: function(data) {
+            if(testvar == 1) {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
+    var loseScrn = {
+        timeline:[{
+        type: jsPsychPsychophysics,
+        data: jsPsych.timelineVariable('data'),
+        stimuli: rsltScreenLose,
+        canvas_width: wd,
+        canvas_height: ht,
+    }],
+        conditional_function: function(data) {
+            if(testvar == 0) {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
+    var trial = {
+        timeline: [
+            {
+                type: jsPsychPsychophysics,
+                stimuli: raceStart,
+                response_type: 'key',
+                key_press: ['1', '2'],
+                canvas_width: wd,
+                canvas_height: ht,
+                data: jsPsych.timelineVariable('data'),
+                on_finish: function (data) {
+                    if (data.response == null) {
+                        data.correct = null
+                    } else if (data.outcome == data.response) {
+                        data.correct = true
+                        testvar = 1
+                    } else if (data.outcome != data.response) {
+                        data.correct = false
+                        testvar = 0
+                    }
+                    data.winner = data.outcome
+                    console.log(testvar)
+                }
+            }, {
+                type: jsPsychPsychophysics,
+                data: jsPsych.timelineVariable('data'),
+                stimuli: function (data) {
+                    if (jsPsych.data.get().last(1).values()[0].outcome == 1) {
+                        return h1
+                    } else {
+                        return h2
+                    }
+                },
+                trial_duration: 1000,
+                canvas_width: wd,
+                canvas_height: ht,
+            },
+            winScrn,
+            loseScrn
+        ],
+        timeline_variables: arr
+    }
+
+    jsPsych.run([trial])
+</script>
+
+</html>

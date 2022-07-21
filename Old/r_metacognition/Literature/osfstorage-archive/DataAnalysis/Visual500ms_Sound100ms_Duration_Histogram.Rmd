@@ -1,0 +1,200 @@
+---
+title: "MacBook Pro"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+device <- 3 # Change also the title of this script.
+bin_width <- 5 # ms
+if (device == 1){
+  dat <- read.csv('Study2_ProBook.csv', header = F)
+  xRange_visual <- seq(460, 600, bin_width)
+  xRange_audio <- seq(80, 120, bin_width)
+} else if (device == 2) {
+  dat <- read.csv('Study2_OptiPlex.csv', header = F)
+  xRange_visual <- seq(450, 650, bin_width)
+  xRange_audio <- seq(80, 120, bin_width)
+} else if (device == 3) {
+  dat <- read.csv('Study2_MacBookPro.csv', header = F)
+  xRange_visual <- seq(460, 540, bin_width)
+  xRange_audio <- seq(80, 120, bin_width)
+} else {
+  dat <- read.csv('Study2_iMac.csv', header = F)
+  xRange_visual <- seq(460, 540, bin_width)
+  xRange_audio <- seq(60, 120, bin_width)
+}
+
+# "safari" is replaced by "safari" on the Mac
+myColNames <- c(
+	"chrome_opto1_onset", "chrome_opto1_offset", "chrome_opto1_duration",
+	"chrome_mic1_onset", "chrome_mic1_offset", "chrome_mic1_duration",
+	"firefox_opto1_onset", "firefox_opto1_offset", "firefox_opto1_duration",
+	"firefox_mic1_onset", "firefox_mic1_offset", "firefox_mic1_duration",
+	"safari_opto1_onset", "safari_opto1_offset", "safari_opto1_duration",
+	"safari_mic1_onset", "safari_mic1_offset", "safari_mic1_duration")
+colnames(dat) <- myColNames
+
+##############
+# No plugin
+chrome_no_plugin_visual <- dat$chrome_opto1_duration[1:100]
+chrome_no_plugin_audio <- dat$chrome_mic1_duration[1:100]
+
+firefox_no_plugin_visual <- dat$firefox_opto1_duration[1:100]
+firefox_no_plugin_audio <- dat$firefox_mic1_duration[1:100]
+
+safari_no_plugin_visual <- dat$safari_opto1_duration[1:100]
+safari_no_plugin_audio <- dat$safari_mic1_duration[1:100]
+
+##############
+# Plugin
+chrome_plugin_visual <- dat$chrome_opto1_duration[501:600]
+chrome_plugin_audio <- dat$chrome_mic1_duration[501:600]
+
+firefox_plugin_visual <- dat$firefox_opto1_duration[501:600]
+firefox_plugin_audio <- dat$firefox_mic1_duration[501:600]
+
+safari_plugin_visual <- dat$safari_opto1_duration[501:600]
+safari_plugin_audio <- dat$safari_mic1_duration[501:600]
+
+y_Max <- 100
+chrome_color <- "#dc143c"
+firefox_color <- "#006400"
+safari_color <- "#1E90FF"
+horiz_label <- "Display duration (ms)"
+
+```
+
+### Display and sound duration
+The bin width is 5 ms in all histograms.
+
+The scale of the horizontal axis is fixed for each condition.
+
+## 500-ms display duration {.tabset}
+###  No Plugin Chrome
+
+Mean = `r round(mean(chrome_no_plugin_visual, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_no_plugin_visual, na.rm=T), 1)`
+
+```{r}
+hist(chrome_no_plugin_visual, breaks=xRange_visual, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### No Plugin Firefox
+
+Mean = `r round(mean(firefox_no_plugin_visual, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_no_plugin_visual, na.rm=T), 1)`
+
+```{r}
+hist(firefox_no_plugin_visual, breaks=xRange_visual, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### No Plugin safari
+
+Mean = `r round(mean(safari_no_plugin_visual, na.rm=T), 1)`
+
+SD = `r round(sd(safari_no_plugin_visual, na.rm=T), 1)`
+
+```{r}
+hist(safari_no_plugin_visual, breaks=xRange_visual, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+
+###  Plugin Chrome
+
+Mean = `r round(mean(chrome_plugin_visual, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_plugin_visual, na.rm=T), 1)`
+
+```{r}
+hist(chrome_plugin_visual, breaks=xRange_visual, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### Plugin Firefox
+
+Mean = `r round(mean(firefox_plugin_visual, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_plugin_visual, na.rm=T), 1)`
+
+```{r}
+hist(firefox_plugin_visual, breaks=xRange_visual, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### Plugin safari
+
+Mean = `r round(mean(safari_plugin_visual, na.rm=T), 1)`
+
+SD = `r round(sd(safari_plugin_visual, na.rm=T), 1)`
+
+```{r}
+hist(safari_plugin_visual, breaks=xRange_visual, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+
+## 100-ms sound duration {.tabset}
+###  No Plugin Chrome
+
+Mean = `r round(mean(chrome_no_plugin_audio, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_no_plugin_audio, na.rm=T), 1)`
+
+```{r}
+horiz_label <- "Sound duration (ms)"
+hist(chrome_no_plugin_audio, breaks=xRange_audio, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### No Plugin Firefox
+
+Mean = `r round(mean(firefox_no_plugin_audio, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_no_plugin_audio, na.rm=T), 1)`
+
+```{r}
+hist(firefox_no_plugin_audio, breaks=xRange_audio, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### No Plugin safari
+
+Mean = `r round(mean(safari_no_plugin_audio, na.rm=T), 1)`
+
+SD = `r round(sd(safari_no_plugin_audio, na.rm=T), 1)`
+
+```{r}
+hist(safari_no_plugin_audio, breaks=xRange_audio, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+###  Plugin Chrome
+
+Mean = `r round(mean(chrome_plugin_audio, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_plugin_audio, na.rm=T), 1)`
+
+```{r}
+hist(chrome_plugin_audio, breaks=xRange_audio, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### Plugin Firefox
+
+Mean = `r round(mean(firefox_plugin_audio, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_plugin_audio, na.rm=T), 1)`
+
+```{r}
+hist(firefox_plugin_audio, breaks=xRange_audio, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### Plugin safari
+
+Mean = `r round(mean(safari_plugin_audio, na.rm=T), 1)`
+
+SD = `r round(sd(safari_plugin_audio, na.rm=T), 1)`
+
+```{r}
+hist(safari_plugin_audio, breaks=xRange_audio, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+

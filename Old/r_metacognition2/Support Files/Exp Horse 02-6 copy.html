@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-dist/dist/plugin-html-button-response.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-psychophysics.js"></script>
+    <script type="text/javascript" src="HorseAnimation.js"></script>
+    <script type="text/javascript" src="TxtBoxes.js"></script>
+    <script></script>
+
+    <link rel="stylesheet" href="jspsych-psychophysics-master/jspsych-dist/dist/jspsych.css">
+    </link>
+
+</head>
+
+<body></body>
+<script>
+
+    timeTest = [
+        { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } },
+        { person1: getBet(0, 2), person2: getBet(1, 2), data: { outcome: 1 } },
+        { person1: getBet(1, 1), person2: getBet(0, 2), data: { outcome: 1 } },
+        { person1: getBet(1, 2), person2: getBet(0, 1), data: { outcome: 2 } },
+        { person1: getBet(0, 1), person2: getBet(0, 1), data: { outcome: 2 } },
+    ]
+
+    const one = { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } }
+    const two = { person1: getBet(0, 1), person2: getBet(1, 1), data: { outcome: 1 } }
+    timeTest = [
+        one, two
+    ]
+
+    function generateObject(var1, var2, var3) {
+
+
+        const object = new Object()
+        object.person1 = var1
+        object.person2 = var2
+        object.data = { outcome: var3 }
+        return object
+    }
+
+    timeTest2 = [generateObject('var1', 'var2', 2),
+    generateObject('asdf', 'zxcv', 1)]
+
+    function testFunction(conf1, conf2, lo1, hi1, lo2, hi2) {
+        //DETERMINE CONFIDENCE: HIGH (1) OR LOW (0)
+        //THEN DETERMINE RIGHT (1) OR WRONG (0)
+
+        var object = {
+            stimuli: {
+                person1: 'I think horse ',
+                person2: 'I think horse '
+            },
+            data: {
+                outcome: 1,
+                p1conf: 0,
+                p2conf: 0,
+                p1rslt: 0,
+                p2rslt: 0,
+            }
+        }
+
+        if(Math.random() < .5) {
+            object.data.outcome = 2
+        }
+        var horseRslt = [1,2,1]
+        //SETUP
+
+        if(Math.random() > conf1) {
+            object.data.p1conf = 1
+        }
+
+        if(Math.random() > conf2) {
+            object.data.p2conf = 1
+        }
+
+        if(object.data.p1conf) {
+            object.stimuli.person1 = 'I know horse '
+            if (Math.random() < hi1) {
+                object.data.p1rslt = 1
+                object.stimuli.person1 += horseRslt[object.data.outcome-1] + ' will win'
+            } else {
+                object.stimuli.person1 += horseRslt[object.data.outcome] + ' will win'
+            }
+        } else {
+            if (Math.random() < lo1) {
+                object.data.p1rslt = 1
+                object.stimuli.person1 += horseRslt[object.data.outcome-1] + ' will win'
+            } else {
+                object.stimuli.person1 += horseRslt[object.data.outcome] + ' will win'
+            }
+        }
+
+        if(object.data.p2conf) {
+            object.stimuli.person2 = 'I know horse '
+            if (Math.random() < hi2) {
+                object.data.p2rslt = 1
+                object.stimuli.person2 += horseRslt[object.data.outcome-1] + ' will win'
+            } else {
+                object.stimuli.person2 += horseRslt[object.data.outcome] + ' will win'
+            }
+        } else {
+            if (Math.random() < lo2) {
+                object.data.p2rslt = 1
+                object.stimuli.person2 += horseRslt[object.data.outcome-1] + ' will win'
+            } else {
+                object.stimuli.person2 += horseRslt[object.data.outcome] + ' will win'
+
+            }
+        }
+
+
+
+
+
+
+        return object
+    }
+
+    var arr = []
+    for (let i = 0; i < 10; i++) {
+        arr.push(testFunction(.5, .5, .01, .99, .5, .5))
+    }
+
+
+    console.log(arr)
+
+    var trial = {
+        timeline: [
+            {
+                type: jsPsychPsychophysics,
+                stimuli: raceStart,
+                response_type: 'key',
+                key_press: ['1', '2'],
+                canvas_width: wd,
+                canvas_height: ht,
+                background_color: 'white',
+                data: jsPsych.timelineVariable('data'),
+                on_finish: function (data) {
+                    if (data.response == null) {
+                        data.correct = null
+                    } else if (data.outcome == data.response) {
+                        data.correct = true
+                    } else if (data.outcome != data.response) {
+                        data.correct = false
+                    }
+                    data.winner = data.outcome
+                }
+            }, {
+                type: jsPsychPsychophysics,
+                stimuli: function (data) {
+                    if (jsPsych.data.getLastTrialData().values()[0].correct == true) {
+                        if (jsPsych.data.getLastTrialData().values()[0].outcome == 1) {
+                            return h1cor
+                        } else {
+                            return h2cor
+                        }
+                    } else if (jsPsych.data.getLastTrialData().values()[0].correct == false) {
+                        if (jsPsych.data.getLastTrialData().values()[0].outcome == 1) {
+                            return h1wrg
+                        } else {
+                            return h2wrg
+                        }
+                    }
+                },
+                data: jsPsych.timelineVariable('data'),
+                canvas_width: wd,
+                canvas_height: ht * .9,
+                background_color: 'white',
+            }
+        ],
+        timeline_variables: timeTest2
+    }
+
+    jsPsych.run([trial])
+
+</script>
+
+</html>

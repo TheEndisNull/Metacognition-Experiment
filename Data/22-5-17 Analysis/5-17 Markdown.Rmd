@@ -1,0 +1,245 @@
+---
+title: "5-17 Markdown"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r data, include=FALSE}
+startup <- function() {
+  renv::isolate()
+  packages <- c('tidyverse', 'Cairo', 'dqrng', 'readr','ggplot2')
+  
+  installed_packages <- packages %in% rownames(installed.packages())
+  if (any(installed_packages == FALSE)) {
+    install.packages(packages[!installed_packages])
+  }
+  invisible(lapply(packages, library, character.only = TRUE))
+  rm(packages, installed_packages)
+}
+
+startup()
+rm(list = ls())
+data <- read_csv(
+  "22-5-4 to 22-5-4 Data.csv",
+  col_types = cols(
+    trialNum = col_integer(),
+    rt = col_double(),
+    correct = col_logical(),
+    winner = col_integer(),
+    p1conf = col_integer(),
+    p2conf = col_integer(),
+    p1rslt = col_integer(),
+    p2rslt = col_integer(),
+    ...11 = col_skip()
+  )
+) %>%
+  mutate(correct = as.integer(correct))
+
+
+data <- bind_rows(
+  filter(data, cntBalance == 'L') %>%
+    mutate(
+      hiConf = p1conf,
+      loConf = p2conf,
+      hiRslt = p1rslt,
+      loRslt = p2rslt
+    ) %>%
+    select(-c(7:10)),
+  filter(data, cntBalance == 'R') %>%
+    mutate(
+      hiConf = p2conf,
+      loConf = p1conf,
+      hiRslt = p2rslt,
+      loRslt = p1rslt
+    ) %>%
+    select(-c(7:10))
+)
+
+```
+
+Original data output by experiment.
+Correct: Participant made the correct (1) prediction or wrong (0) prediction 
+winner: which horse won (1 or 2)
+hi/lo: high-calibrated vs low-calibrated advisor
+Conf: high confidence prediction (1) vs low confidence prediction (0)
+Rslt: advisor made the correct (1) prediction or wrong (0) prediction
+
+```{r show data, echo=FALSE}
+data
+```
+
+Plots of advisor confidence over 500 trials for four sample participants
+
+
+```{r plot advisor accuracy, echo=FALSE}
+#====
+#Plot Advisor Accuracy
+
+plotAdvisorAcc <- function(subject) {
+  dataLonly <- filter(data, subID == subject)
+  
+  varName = c('_loConf', '_hiConf')
+  for (i in 0:1) {
+    assign(
+      paste0('hiCal', varName[i + 1]),
+      filter(dataLonly, hiConf == i) %>%
+        mutate(
+          winSum = cumsum(hiRslt),
+          proportion = winSum / 1:length(winSum),
+          group = paste0('hiCal', varName[i + 1])
+        ),
+      envir = globalenv()
+    )
+    
+    assign(
+      paste0('loCal', varName[i + 1]),
+      filter(dataLonly, loConf == i) %>%
+        mutate(
+          winSum = cumsum(loRslt),
+          proportion = winSum / 1:length(winSum),
+          group = paste0('loCal', varName[i + 1])
+        ),
+      envir = globalenv()
+    )
+  }
+  
+  graphData <- bind_rows(hiCal_hiConf,
+                         hiCal_loConf,
+                         loCal_hiConf,
+                         loCal_loConf) %>%
+    arrange(group) %>%
+    select(trialNum, proportion, group)
+  
+  ggplot(graphData,
+         aes(
+           x = trialNum,
+           y = proportion,
+           group = group,
+           color = group
+         )) +
+    scale_color_manual(
+      values = c(
+        hiCal_hiConf = 'red',
+        hiCal_loConf = 'blue',
+        loCal_hiConf = 'orange',
+        loCal_loConf = 'green'
+      ),
+      name = 'Advisors',
+      labels = c(
+        'Calibrated High Confidence',
+        'Calibrated Low Confidence',
+        'Non-Calibrated High Confidence',
+        'Non-Calibrated Low Confidence'
+      )
+    ) +
+    labs(title = "Advisor Accuracy by Confidence",
+         x = "Trial Number", y = "Proportion Correct") +
+    coord_cartesian(ylim = c(0, 1)) +
+    #coord_cartesian(xlim = c(0, 500)) +
+    geom_step()
+}
+
+plotAdvisorAcc('0uk')
+plotAdvisorAcc('aya')
+plotAdvisorAcc('pj7')
+plotAdvisorAcc('ynb')
+```
+
+```{r plot sign test, include=FALSE}
+totalsTable <- mutate(data,
+                      advAgree = ifelse(hiRslt == loRslt, 1, 0),) %>%
+  filter(advAgree == 0) %>%
+  group_by(subID) %>%
+  summarise(
+    disagree = sum(advAgree != ''),
+    HH = sum(hiConf == 1 & loConf == 1),
+    HL = sum(hiConf == 1 & loConf == 0),
+    LL = sum(hiConf == 0 & loConf == 0),
+    LH = sum(hiConf == 0 & loConf == 1),
+    
+    H_HH = sum(hiConf == 1 &
+                 loConf == 1 &
+                 correct == hiRslt) / HH,
+    H_HL = sum(hiConf == 1 &
+                 loConf == 0 &
+                 correct == hiRslt) / HL,
+    H_LH = sum(hiConf == 0 &
+                 loConf == 1 &
+                 correct == hiRslt) / LH,
+    H_LL = sum(hiConf == 0 &
+                 loConf == 0 &
+                 correct == hiRslt) / LL,
+  )
+
+signTestData <- summarise(
+  totalsTable,
+  Hcnt_HH = sum(H_HH > .5),
+  Hcnt_HL = sum(H_HL > .5),
+  Hcnt_LH = sum(H_LH > .5),
+  Hcnt_LL = sum(H_LL > .5),
+  
+  Ncnt_HH = sum(H_HH == .5),
+  Ncnt_HL = sum(H_HL == .5),
+  Ncnt_LH = sum(H_LH == .5),
+  Ncnt_LL = sum(H_LL == .5),
+  
+  Lcnt_HH = sum(H_HH < .5),
+  Lcnt_HL = sum(H_HL < .5),
+  Lcnt_LH = sum(H_LH < .5),
+  Lcnt_LL = sum(H_LL < .5),
+) %>%
+  pivot_longer(
+    cols = c(
+      'Hcnt_HH',
+      'Hcnt_HL',
+      'Hcnt_LH',
+      'Hcnt_LL',
+      'Ncnt_HH',
+      'Ncnt_HL',
+      'Ncnt_LH',
+      'Ncnt_LL',
+      'Lcnt_HH',
+      'Lcnt_HL',
+      'Lcnt_LH',
+      'Lcnt_LL',
+    )
+  ) %>%
+  mutate(one = c(rep('High', 4), rep('None', 4), rep('Low', 4)),
+         two = rep(c(
+           'High vs High', 'High vs Low', 'Low vs High', 'Low vs Low'
+         ), 3)) %>%
+  select(-1)
+
+```
+
+Tables & Plots for participant agreement with advisors
+Table 1. Proportion of trials which each participant agreed with one of the two advisors when
+both advisors gave different responses (disagree)
+Table 2. Number of participants that agreed with one of the two advisors for the majority (<.5) of trials
+Figure 1. Boxplot of agreement data
+```{r test, echo=FALSE}
+totalsTable
+signTestData
+ggplot(signTestData, aes(
+  fill = factor(one, levels = c('Low', 'None', 'High')),
+  y = value,
+  x = two
+)) +
+  geom_bar(position = "stack", stat = "identity") +
+  scale_y_continuous(breaks = c(0, 9 / 2, 9)) +
+  scale_fill_manual(
+    values = c(Low = 'lightblue',
+               None = 'ivory4',
+               High = 'lightblue4'),
+    name = 'Advisor Followed',
+    labels = c(
+      'Non-Calibrated Advisor',
+      'Neither Advisor',
+      'High-Calibrated Advisor'
+    )
+  ) +
+  labs(title = "Agreement with Well/Non-calibrated Advisor",
+       x = "Advisor (High-Calibrated vs Non-Calibrated) Confidence", y = "# of times ")
+```

@@ -1,0 +1,8 @@
+subID,trialNum,cntBalance,correct,rt,p1conf,p2conf,p1rslt,p2rslt,
+67g,1,l,false,1812,0,1,0,1,
+brk,brk,brk,brk,brk,brk,brk,brk,brk,
+67g,2,l,false,271,1,1,0,1,
+brk,brk,brk,brk,brk,brk,brk,brk,brk,
+67g,3,l,false,159,1,0,1,1,
+brk,brk,brk,brk,brk,brk,brk,brk,brk,
+67g,4,l,true,67,1,0,1,0,

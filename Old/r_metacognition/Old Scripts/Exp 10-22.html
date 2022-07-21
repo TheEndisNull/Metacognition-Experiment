@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="jsPsych-main/jspsych.js"></script>
+  <script src="jspsych-psychophysics-master/jspsych-psychophysics.js"></script>
+  <script src='jsPsych-main/plugins/jspsych-html-keyboard-response.js'></script>
+  <script src='jsPsych-main/plugins/jspsych-instructions.js'></script>
+  <link rel="stylesheet" href="jsPsych-main/css/jspsych.css">
+</head>
+
+<body></body>
+<script>
+
+
+  /*
+  10-21:  Created function to determine whether H1 or H2 wins
+          Updated function to allow 2 uses to guess who wins with prob set by timeline variable
+
+  10-22:  Added instructions
+          Reverted from jsPsych 7.0 to 6.3.1
+          Added psychophysics plugin
+          Added basic horse race stimulus
+
+  10-25:  Updated horse race stimulus
+
+  To Do:  Finalize horse race stimulus
+          Connect outcome variable to outcome
+  */
+
+
+  var horse1 = {
+    obj_type: 'image',
+    file: 'horse1.png',
+    scale: .05,
+    origin_center: true,
+    startX: -500, // location in the canvas
+    startY: 250,
+    endX: 0,
+    endY: 250,
+    motion_start_time: 0,
+    motion_end_time: 1500,
+  }
+
+  var horse2 = {
+    obj_type: 'image',
+    file: 'horse1.png',
+    scale: .05,
+    origin_center: true,
+    startX: 0, // location in the canvas
+    startY: 250,
+    endX: 500,
+    endY: 250,
+    motion_start_time: 0,
+    motion_end_time: 1000,
+  }
+
+  var motion1 = {
+    type: 'psychophysics',
+    stimuli: [horse1,],
+    response_ends_trial: false,
+    background_color: 'white',
+    trial_duration: 1500,
+  }
+  var motion2 = {
+    type: 'psychophysics',
+    stimuli: [horse2],
+    response_ends_trial: false,
+    background_color: 'white',
+    trial_duration: 1000,
+  }
+
+  var outcome1 = {
+    timeline: [motion1,motion2]
+  }
+
+  var winner = []
+  for (i = 0; i < 10; i++) {
+    winner.push('H1')
+    winner.push('H2')
+  }
+  winner = jsPsych.randomization.repeat(winner, 1);
+
+  function pickWinner(result, p1Chance, p2Chance) {
+    var horses = ['H1', 'H2', 'H1']
+    var winningHorse = horses[result]
+    var p1Choice
+    var p2Choice
+    if (Math.random() < p1Chance) {
+      p1Choice = horses[result]
+    } else {
+      p1Chance = horses[result + 1]
+    }
+
+    if (Math.random() < p2Chance) {
+      p2Choice = horses[result]
+    } else {
+      p2Choice = horses[result + 1]
+    }
+
+    return (
+      '<p> Person 1 says ' + p1Choice + ' is going to be the winner</p>' +
+      '<p> Person 2 says ' + p2Choice + ' is going to be the winner</p>' +
+      '<p>(' + horses[result] + ' is going to be the the winner)</p>'
+    )
+  }
+  console.log(winner[0])
+
+  var trial_1 = {
+    type: 'html-keyboard-response',
+    stimulus: jsPsych.timelineVariable('stimulus'),
+    choices: ['1', '2'],
+    prompt: '<p>H1 or H2? (1 or 2)</p>',
+    data: jsPsych.timelineVariable('data'),
+    on_finish: function (data, stimulus) {
+      var correct = null
+      if (data.outCome == 'H1' && data.response == ['1'] || data.outCome == 'H2' && data.response == ['2']) {
+        correct = true
+      } else {
+        correct = false
+      }
+      data.correct = correct
+    }
+  }
+
+  var trial_2 = {
+    type: 'html-keyboard-response',
+    stimulus: function () {
+      if (jsPsych.data.getLastTrialData().values()[0].correct == true) {
+        return '<p>You win</p>'
+      } else if (jsPsych.data.getLastTrialData().values()[0].correct == false) {
+        return '<p>You lose</p>'
+      } else if (jsPsych.data.getLastTrialData().values()[0].correct == null) {
+        return '<p>Miss</p>'
+      }
+    },
+    choices: jsPsych.ALL_KEYS,
+    post_trial_gap: 1000,   //resultresultresult 1000
+  }
+
+
+  var timelineArr = []
+  for (let i = 0; i < 2; i++) {
+    timelineArr.push(
+      { stimulus: pickWinner(i, .8, .6), data: { outCome: winner[i] } }
+    )
+  }
+
+  
+
+  jsPsych.init({
+    timeline: [outcome1],
+    on_finish: function () { jsPsych.data.displayData(); }
+  });
+
+</script>
+
+</html>

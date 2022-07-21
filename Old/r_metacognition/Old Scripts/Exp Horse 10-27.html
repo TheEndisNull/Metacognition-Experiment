@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="jsPsych-main/jspsych.js"></script>
+    <script src="jspsych-psychophysics-master/jspsych-psychophysics.js"></script>
+    <script src='jsPsych-main/plugins/jspsych-html-keyboard-response.js'></script>
+    <script src='jsPsych-main/plugins/jspsych-instructions.js'></script>
+    <script type="text/javascript" src="HorseAnimation.js"></script>
+    <link rel="stylesheet" href="jsPsych-main/css/jspsych.css">
+</head>
+
+<body></body>
+<script>
+
+
+    /*
+    10-21:  Created function to determine whether H1 or H2 wins
+            Updated function to allow 2 uses to guess who wins with prob set by timeline variable
+  
+    10-22:  Added instructions
+            Reverted from jsPsych 7.0 to 6.3.1
+            Added psychophysics plugin
+            Added basic horse race stimulus
+  
+    10-25:  Updated horse race stimulus
+  
+    To Do:  Finalize horse race stimulus
+            Connect outcome variable to outcome
+    */
+
+    /*
+    X 1920: 960
+    Y 1080: 540
+    */
+
+    var textbox1Coord = [560, 740]
+    var textbox2Coord = [1360, 740]
+    var textboxSize = [350, 200]
+
+    var text1 = {
+        obj_type: 'text',
+        startX: textbox1Coord[0],
+        startY: textbox1Coord[1],
+        content: 'I bet 80 that H1 will win',
+        font: "30px 'Arial'",
+        text_color: 'black',
+    }
+
+    var textbox1 = {
+        obj_type: 'rect', // means a rectangle
+        startX: textbox1Coord[0], // location in the canvas
+        startY: textbox1Coord[1],
+        width: textboxSize[0], // of the rectangle
+        height: textboxSize[1],
+        line_color: '#ffffff',
+        fill_color: '#ffffff',
+    }
+
+    var text2 = {
+        obj_type: 'text',
+        startX: textbox2Coord[0],
+        startY: textbox2Coord[1],
+        content: 'I bet 80 that H1 will win',
+        font: "30px 'Arial'",
+        text_color: 'black',
+    }
+
+    var textbox2 = {
+        obj_type: 'rect', // means a rectangle
+        startX: textbox2Coord[0], // location in the canvas
+        startY: textbox2Coord[1],
+        width: textboxSize[0], // of the rectangle
+        height: textboxSize[1],
+        line_color: '#ffffff',
+        fill_color: '#ffffff',
+    }
+    /*fill_color: function(){
+            if (Math.random() < 0.5){
+                return 'blue'
+            } else {
+                return 'red'
+            }
+        },
+        jsPsych.timelineVariable
+        */textboxSize
+    var trial = {
+        type: 'psychophysics',
+        stimuli: [textbox1, textbox2, text1, text2,
+            line0,
+            line1,
+            line2,
+            line3,
+            line4,
+            horse1,
+            horse2,],
+        choices: ['y', 'n'], // The participant can respond to the stimuli using the 'y' or 'n' key.
+        canvas_width: 1920,
+        canvas_height: 1080,
+        timeline_variables: [
+            { test: 'I bet 80 that H1 will win' }
+        ]
+    }
+
+    jsPsych.init({
+        timeline: [trial],
+        on_finish: function () { jsPsych.data.displayData(); }
+    });
+
+</script>
+
+</html>

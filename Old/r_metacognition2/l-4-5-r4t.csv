@@ -1,0 +1,4 @@
+subID,trialNum,cntBalance,correct,rt,p1conf,p2conf,p1rslt,p2rslt,
+r4t,1,l,false,28548,0,1,1,0,
+r4t,2,l,false,11401,0,0,1,0,
+r4t,3,l,true,16079,1,0,1,1,

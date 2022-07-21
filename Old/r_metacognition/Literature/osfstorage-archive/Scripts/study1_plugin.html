@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../jspsych.js"></script>
+  <script src="../plugins/jspsych-psychophysics.js"></script>
+  <script src="../plugins/jspsych-html-keyboard-response.js"></script>
+  <link rel="stylesheet" href="../css/jspsych.css"></link>
+  <style>
+    p {
+        color: white;
+    }
+    body {
+      background-color: black;
+    }
+  </style>
+</head>
+<body></body>
+<script>
+    var instruction = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>This program uses the jspsych-psychophysics plugin.</p><p>Press any key to start.</p>'
+    }
+
+    var experiment = [];
+    experiment.push(instruction);
+
+    for (let phase = 0; phase < 8; phase++){
+        for (let repeat = 0; repeat < 100; repeat++){
+
+            if (phase == 0){ // The rect1 is presented for 150ms. The rect2 is presented 20 ms after the onset of the rect1 for 20 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 250;
+                rect2_show_start_time = 120;
+                rect2_show_end_time = 140;
+            } else if (phase == 1){ // The rect1 is presented for 150ms. The rect2 is presented 50 ms after the onset of the rect1 for 20 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 250;
+                rect2_show_start_time = 150;
+                rect2_show_end_time = 170;
+            } else if (phase == 2){ // The rect1 is presented for 150ms. The rect2 is presented 150 ms after the onset of the rect1 for 20 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 250;
+                rect2_show_start_time = 250;
+                rect2_show_end_time = 270;
+            } else if (phase == 3){ // The rect1 is presented for 150ms. The rect2 is presented 500 ms after the onset of the rect1 for 20 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 250;
+                rect2_show_start_time = 600;
+                rect2_show_end_time = 620;
+            } else if (phase == 4){ // The rect1 is presented for 500ms. The rect2 is presented 20 ms after the onset of the rect1 for 50 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 600;
+                rect2_show_start_time = 120;
+                rect2_show_end_time = 170;
+            } else if (phase == 5){ // The rect1 is presented for 500ms. The rect2 is presented 50 ms after the onset of the rect1 for 50 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 600;
+                rect2_show_start_time = 150;
+                rect2_show_end_time = 200;
+            } else if (phase == 6){ // The rect1 is presented for 500ms. The rect2 is presented 150 ms after the onset of the rect1 for 50 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 600;
+                rect2_show_start_time = 250;
+                rect2_show_end_time = 300;
+            } else { // The rect1 is presented for 500ms. The rect2 is presented 500 ms after the onset of the rect1 for 50 ms.
+                rect1_show_start_time = 100;
+                rect1_show_end_time = 600;
+                rect2_show_start_time = 600;
+                rect2_show_end_time = 650;
+            }
+
+            rect1 = {
+                type: 'rect',
+                startX: 300,
+                startY: 200,
+                width: 100,
+                height: 100,
+                fill_color: 'white',
+                show_start_time: rect1_show_start_time,
+                show_end_time: rect1_show_end_time,
+            }
+
+            rect2 = {
+                type: 'rect',
+                startX: 800,
+                startY: 500,
+                width: 100,
+                height: 100,
+                fill_color: 'white',
+                show_start_time: rect2_show_start_time,
+                show_end_time: rect2_show_end_time,
+            }
+
+            const trial_time = (rect1_show_end_time > rect2_show_end_time) ? rect1_show_end_time + 100 : rect2_show_end_time + 100;
+
+            var show_rects = {
+                type: 'psychophysics',
+                stimuli: [rect1, rect2],
+                trial_duration: trial_time,
+                response_ends_trial: false,
+                background_color: 'black',
+                canvas_width: 900,
+                canvas_height: 600,
+            }
+
+            experiment.push(show_rects);
+        }
+    }
+
+    var end_trial = {
+        type: 'html-keyboard-response',
+        stimulus: '<p>The program is finished.</p>'
+    }
+
+    experiment.push(end_trial)
+    
+    jsPsych.init({
+        timeline: experiment,
+        on_finish: function() {
+            jsPsych.data.displayData();
+        },
+    });
+</script>
+
+</html>

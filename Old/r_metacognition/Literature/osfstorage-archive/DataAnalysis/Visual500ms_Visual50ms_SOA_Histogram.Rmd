@@ -1,0 +1,346 @@
+---
+title: "iMac"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+device <- 4 # Change also the title of this script.
+bin_width <- 5 # ms
+if (device == 1){
+  dat <- read.csv('Study1_ProBook.csv', header = F)
+  xRange_20ms <- seq(0, 80, bin_width)
+  xRange_50ms <- seq(0, 140, bin_width)
+  xRange_150ms <- seq(120, 260, bin_width)
+  xRange_500ms <- seq(460, 600, bin_width)
+} else if (device == 2) {
+  dat <- read.csv('Study1_OptiPlex.csv', header = F)
+  xRange_20ms <- seq(20, 100, bin_width)
+  xRange_50ms <- seq(20, 120, bin_width)
+  xRange_150ms <- seq(120, 220, bin_width)
+  xRange_500ms <- seq(460, 560, bin_width)
+} else if (device == 3) {
+  dat <- read.csv('Study1_MacBookPro.csv', header = F)
+  xRange_20ms <- seq(0, 80, bin_width)
+  xRange_50ms <- seq(20, 100, bin_width)
+  xRange_150ms <- seq(120, 200, bin_width)
+  xRange_500ms <- seq(460, 560, bin_width)
+} else {
+  dat <- read.csv('Study1_iMac.csv', header = F)
+  xRange_20ms <- seq(0, 80, bin_width)
+  xRange_50ms <- seq(20, 100, bin_width)
+  xRange_150ms <- seq(120, 200, bin_width)
+  xRange_500ms <- seq(480, 560, bin_width)
+}
+
+myColNames <- c(
+	"chrome_no_plugin_opto2_onset", "chrome_no_plugin_opto2_offset", "chrome_no_plugin_opto2_duration",
+	"chrome_no_plugin_opto1_onset", "chrome_no_plugin_opto1_offset", "chrome_no_plugin_opto1_duration",
+	"chrome_plugin_opto2_onset", "chrome_plugin_opto2_offset", "chrome_plugin_opto2_duration",
+	"chrome_plugin_opto1_onset", "chrome_plugin_opto1_offset", "chrome_plugin_opto1_duration",
+	"firefox_no_plugin_opto2_onset", "firefox_no_plugin_opto2_offset", "firefox_no_plugin_opto2_duration",
+	"firefox_no_plugin_opto1_onset", "firefox_no_plugin_opto1_offset", "firefox_no_plugin_opto1_duration",
+	"firefox_plugin_opto2_onset", "firefox_plugin_opto2_offset", "firefox_plugin_opto2_duration",
+	"firefox_plugin_opto1_onset", "firefox_plugin_opto1_offset", "firefox_plugin_opto1_duration",
+	"safari_no_plugin_opto2_onset", "safari_no_plugin_opto2_offset", "safari_no_plugin_opto2_duration",
+	"safari_no_plugin_opto1_onset", "safari_no_plugin_opto1_offset", "safari_no_plugin_opto1_duration",
+	"safari_plugin_opto2_onset", "safari_plugin_opto2_offset", "safari_plugin_opto2_duration",
+	"safari_plugin_opto1_onset", "safari_plugin_opto1_offset", "safari_plugin_opto1_duration")
+colnames(dat) <- myColNames
+
+##############
+# No plugin
+chrome_no_plugin_20ms <- dat$chrome_no_plugin_opto2_onset[401:500] - dat$chrome_no_plugin_opto1_onset[401:500]
+chrome_no_plugin_50ms <- dat$chrome_no_plugin_opto2_onset[501:600] - dat$chrome_no_plugin_opto1_onset[501:600]
+chrome_no_plugin_150ms <- dat$chrome_no_plugin_opto2_onset[601:700] - dat$chrome_no_plugin_opto1_onset[601:700]
+chrome_no_plugin_500ms <- dat$chrome_no_plugin_opto2_onset[701:800] - dat$chrome_no_plugin_opto1_onset[701:800]
+
+firefox_no_plugin_20ms <- dat$firefox_no_plugin_opto2_onset[401:500] - dat$firefox_no_plugin_opto1_onset[401:500]
+firefox_no_plugin_50ms <- dat$firefox_no_plugin_opto2_onset[501:600] - dat$firefox_no_plugin_opto1_onset[501:600]
+firefox_no_plugin_150ms <- dat$firefox_no_plugin_opto2_onset[601:700] - dat$firefox_no_plugin_opto1_onset[601:700]
+firefox_no_plugin_500ms <- dat$firefox_no_plugin_opto2_onset[701:800] - dat$firefox_no_plugin_opto1_onset[701:800]
+
+safari_no_plugin_20ms <- dat$safari_no_plugin_opto2_onset[401:500] - dat$safari_no_plugin_opto1_onset[401:500]
+safari_no_plugin_50ms <- dat$safari_no_plugin_opto2_onset[501:600] - dat$safari_no_plugin_opto1_onset[501:600]
+safari_no_plugin_150ms <- dat$safari_no_plugin_opto2_onset[601:700] - dat$safari_no_plugin_opto1_onset[601:700]
+safari_no_plugin_500ms <- dat$safari_no_plugin_opto2_onset[701:800] - dat$safari_no_plugin_opto1_onset[701:800]
+
+##############
+# Plugin
+chrome_plugin_20ms <- dat$chrome_plugin_opto2_onset[401:500] - dat$chrome_plugin_opto1_onset[401:500]
+chrome_plugin_50ms <- dat$chrome_plugin_opto2_onset[501:600] - dat$chrome_plugin_opto1_onset[501:600]
+chrome_plugin_150ms <- dat$chrome_plugin_opto2_onset[601:700] - dat$chrome_plugin_opto1_onset[601:700]
+chrome_plugin_500ms <- dat$chrome_plugin_opto2_onset[701:800] - dat$chrome_plugin_opto1_onset[701:800]
+
+firefox_plugin_20ms <- dat$firefox_plugin_opto2_onset[401:500] - dat$firefox_plugin_opto1_onset[401:500]
+firefox_plugin_50ms <- dat$firefox_plugin_opto2_onset[501:600] - dat$firefox_plugin_opto1_onset[501:600]
+firefox_plugin_150ms <- dat$firefox_plugin_opto2_onset[601:700] - dat$firefox_plugin_opto1_onset[601:700]
+firefox_plugin_500ms <- dat$firefox_plugin_opto2_onset[701:800] - dat$firefox_plugin_opto1_onset[701:800]
+
+safari_plugin_20ms <- dat$safari_plugin_opto2_onset[401:500] - dat$safari_plugin_opto1_onset[401:500]
+safari_plugin_50ms <- dat$safari_plugin_opto2_onset[501:600] - dat$safari_plugin_opto1_onset[501:600]
+safari_plugin_150ms <- dat$safari_plugin_opto2_onset[601:700] - dat$safari_plugin_opto1_onset[601:700]
+safari_plugin_500ms <- dat$safari_plugin_opto2_onset[701:800] - dat$safari_plugin_opto1_onset[701:800] 
+
+y_Max <- 100
+chrome_color <- "#dc143c"
+firefox_color <- "#006400"
+safari_color <- "#1E90FF"
+horiz_label <- "SOA (ms)"
+
+```
+
+### SOAs between the onset of the 500-ms square and the 50-ms square
+
+The bin width is 5 ms in all histograms.
+
+The scale of the horizontal axis is fixed for each condition.
+
+## 20-ms SOA {.tabset}
+###  No Plugin Chrome
+
+Mean = `r round(mean(chrome_no_plugin_20ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_no_plugin_20ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_no_plugin_20ms, breaks=xRange_20ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### No Plugin Firefox
+
+Mean = `r round(mean(firefox_no_plugin_20ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_no_plugin_20ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_no_plugin_20ms, breaks=xRange_20ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### No Plugin Safari
+
+Mean = `r round(mean(safari_no_plugin_20ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_no_plugin_20ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_no_plugin_20ms, breaks=xRange_20ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+###  Plugin Chrome
+
+Mean = `r round(mean(chrome_plugin_20ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_plugin_20ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_plugin_20ms, breaks=xRange_20ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### Plugin Firefox
+
+Mean = `r round(mean(firefox_plugin_20ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_plugin_20ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_plugin_20ms, breaks=xRange_20ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### Plugin Safari
+
+Mean = `r round(mean(safari_plugin_20ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_plugin_20ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_plugin_20ms, breaks=xRange_20ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+## 50-ms SOA {.tabset}
+###  No Plugin Chrome
+
+Mean = `r round(mean(chrome_no_plugin_50ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_no_plugin_50ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_no_plugin_50ms, breaks=xRange_50ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### No Plugin Firefox
+
+Mean = `r round(mean(firefox_no_plugin_50ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_no_plugin_50ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_no_plugin_50ms, breaks=xRange_50ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### No Plugin Safari
+
+Mean = `r round(mean(safari_no_plugin_50ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_no_plugin_50ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_no_plugin_50ms, breaks=xRange_50ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+###  Plugin Chrome
+
+Mean = `r round(mean(chrome_plugin_50ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_plugin_50ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_plugin_50ms, breaks=xRange_50ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### Plugin Firefox
+
+Mean = `r round(mean(firefox_plugin_50ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_plugin_50ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_plugin_50ms, breaks=xRange_50ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### Plugin Safari
+
+Mean = `r round(mean(safari_plugin_50ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_plugin_50ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_plugin_50ms, breaks=xRange_50ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+
+## 150-ms SOA {.tabset}
+###  No Plugin Chrome
+
+Mean = `r round(mean(chrome_no_plugin_150ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_no_plugin_150ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_no_plugin_150ms, breaks=xRange_150ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### No Plugin Firefox
+
+Mean = `r round(mean(firefox_no_plugin_150ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_no_plugin_150ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_no_plugin_150ms, breaks=xRange_150ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### No Plugin Safari
+
+Mean = `r round(mean(safari_no_plugin_150ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_no_plugin_150ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_no_plugin_150ms, breaks=xRange_150ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+###  Plugin Chrome
+
+Mean = `r round(mean(chrome_plugin_150ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_plugin_150ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_plugin_150ms, breaks=xRange_150ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### Plugin Firefox
+
+Mean = `r round(mean(firefox_plugin_150ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_plugin_150ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_plugin_150ms, breaks=xRange_150ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### Plugin Safari
+
+Mean = `r round(mean(safari_plugin_150ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_plugin_150ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_plugin_150ms, breaks=xRange_150ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+
+## 500-ms SOA {.tabset}
+###  No Plugin Chrome
+
+Mean = `r round(mean(chrome_no_plugin_500ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_no_plugin_500ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_no_plugin_500ms, breaks=xRange_500ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### No Plugin Firefox
+
+Mean = `r round(mean(firefox_no_plugin_500ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_no_plugin_500ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_no_plugin_500ms, breaks=xRange_500ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### No Plugin Safari
+
+Mean = `r round(mean(safari_no_plugin_500ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_no_plugin_500ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_no_plugin_500ms, breaks=xRange_500ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
+
+###  Plugin Chrome
+
+Mean = `r round(mean(chrome_plugin_500ms, na.rm=T), 1)`
+
+SD = `r round(sd(chrome_plugin_500ms, na.rm=T), 1)`
+
+```{r}
+hist(chrome_plugin_500ms, breaks=xRange_500ms, xlab=horiz_label, ylim=c(0, y_Max), col=chrome_color)
+```
+
+### Plugin Firefox
+
+Mean = `r round(mean(firefox_plugin_500ms, na.rm=T), 1)`
+
+SD = `r round(sd(firefox_plugin_500ms, na.rm=T), 1)`
+
+```{r}
+hist(firefox_plugin_500ms, breaks=xRange_500ms, xlab=horiz_label, ylim=c(0, y_Max), col=firefox_color)
+```
+
+### Plugin Safari
+
+Mean = `r round(mean(safari_plugin_500ms, na.rm=T), 1)`
+
+SD = `r round(sd(safari_plugin_500ms, na.rm=T), 1)`
+
+```{r}
+hist(safari_plugin_500ms, breaks=xRange_500ms, xlab=horiz_label, ylim=c(0, y_Max), col=safari_color)
+```
