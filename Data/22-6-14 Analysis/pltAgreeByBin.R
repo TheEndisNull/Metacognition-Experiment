@@ -12,7 +12,7 @@ startup <- function() {
 }
 
 startup()
-
+rm(list = ls())
 data <- read_csv(
   "22-5-4 to 22-5-4 Data.csv",
   col_types = cols(
@@ -23,8 +23,7 @@ data <- read_csv(
     p1conf = col_integer(),
     p2conf = col_integer(),
     p1rslt = col_integer(),
-    p2rslt = col_integer(),
-    ...11 = col_skip()
+    p2rslt = col_integer()
   )
 ) %>%
   mutate(correct = as.integer(correct))

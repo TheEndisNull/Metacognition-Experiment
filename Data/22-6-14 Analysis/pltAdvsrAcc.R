@@ -131,8 +131,8 @@ if (CairoPlt == T) {
   print(plt)
 }
 
-print(df)
-print(pltDf)
+#print(df)
+#print(pltDf)
 return(pltDf)
 
 if (savePlt == T) {

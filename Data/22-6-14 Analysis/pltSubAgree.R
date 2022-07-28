@@ -30,8 +30,22 @@ pltSubAgree <-
         H_LL = sum(hiConf == 0 &
                      loConf == 0 &
                      correct == hiRslt) / LL,
+
+        L_HH = sum(hiConf == 1 &
+                 loConf == 1 &
+                 loRslt == 1) / HH,
+    L_HL = sum(hiConf == 1 &
+                 loConf == 0 &
+                 loRslt == 1) / HL,
+    L_LH = sum(hiConf == 0 &
+                 loConf == 1 &
+                 loRslt == 1) / LH,
+    L_LL = sum(hiConf == 0 &
+                 loConf == 0 &
+                 loRslt == 1) / LL,
       ) %>%
-      pivot_longer(cols = c('H_HH', 'H_HL', 'H_LH', 'H_LL')) %>%
+      pivot_longer(cols = c('H_HH', 'H_HL', 'H_LH', 'H_LL',
+                            'L_HH', 'L_HL', 'L_LH', 'L_LL')) %>%
       select(-c(2:6))
     
     if (subject == 'all') {
@@ -46,8 +60,8 @@ pltSubAgree <-
                       withinvars = 'name',
                       idvar = "subID")
     
-    print(df)
-    print(graphdf)
+    #print(df)
+    #print(graphdf)
     
     width = .8
     dodgeWidth = .85
@@ -133,5 +147,5 @@ pltSubAgree <-
         units = "in"
       )
     }
-    return(graphdf)
+    return(df)
   }
