@@ -10,6 +10,7 @@ startup <- function() {
   invisible(lapply(packages, library, character.only = TRUE))
   rm(packages, installed_packages)
 }
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 startup()
 rm(list = ls())
@@ -61,18 +62,19 @@ data
 
 
 
-df = mutate(data,
-            advAgree = ifelse(hiRslt == loRslt, 1, 0),)
+source('pltSubAgree.R')
+source('pltAdvsrAcc.R')
 #df = filter(df, advAgree == 1) #try without filter
 
-df = group_by(df, subID) %>%
+dfAdvsrAcc = group_by(data, subID) %>%
   summarize(
-    disagree = sum(advAgree != ''),
     HH = sum(hiConf == 1 & loConf == 1),
     HL = sum(hiConf == 1 & loConf == 0),
     LL = sum(hiConf == 0 & loConf == 0),
     LH = sum(hiConf == 0 & loConf == 1),
     
+    #Sum of trials in which high calibrated advisor expressed high confidence, & low calibrated advisor expressed high confidence
+    #in which the calibrated advisor won 
     H_HH = sum(hiConf == 1 &
                  loConf == 1 &
                  hiRslt == 1) / HH,
@@ -86,6 +88,8 @@ df = group_by(df, subID) %>%
                  loConf == 0 &
                  hiRslt == 1) / LL,
     
+    #Sum of trials in which high calibrated advisor expressed high confidence, & low calibrated advisor expressed high confidence
+    #in which the non-calibrated advisor won 
     L_HH = sum(hiConf == 1 &
                  loConf == 1 &
                  loRslt == 1) / HH,
@@ -101,42 +105,40 @@ df = group_by(df, subID) %>%
   ) %>%
   pivot_longer(cols = c('H_HH', 'H_HL', 'H_LH', 'H_LL',
                         'L_HH', 'L_HL', 'L_LH', 'L_LL')) %>%
-  select(-c(2:6))
-
-
-source('pltSubAgree.R')
-source('pltAdvsrAcc.R')
-
-df 
-dfTest = 
-  summarySEwithin(df,
+  select(-c(2:5))
+ 
+dfAdvsrAcc = 
+  summarySEwithin(dfAdvsrAcc,
                   measurevar = "value",
                   withinvars = 'name',
                   idvar = "subID") %>%
   select(1,3,5) %>%
   mutate(group='advsr')
-dfTest
+dfAdvsrAcc
 
-subDf = pltSubAgree(0,'all' , F, F)  %>%
+#proportion of agreement with the calibrated advisor (and inverse of non-calibrated advisors) in which both advisors expressed high confidence
+dfSubAgree = pltSubAgree(0,'all' , F, F)  %>%
   select(1, 3, 5)
 
-subDf = pltSubAgree(0,'all' , F, F)  %>%
+dfSubAgree = pltSubAgree(0,'all' , F, F)  %>%
   select(1, 3, 5) %>%
-  add_row(value = 1 - subDf$value,
-          se = subDf$se[1:4],
+  add_row(value = 1 - dfSubAgree$value,
+          se = dfSubAgree$se[1:4],
           name = c('L_HH', 'L_HL', 'L_LH', 'L_LL')
 ) %>% 
   mutate(group = 'sub')
 
 
-subDf
-dfTest
-graphDf = bind_rows(subDf,
-          dfTest
-) %>% filter()
+dfSubAgree
+dfAdvsrAcc
+graphDf = bind_rows(dfSubAgree,
+          dfAdvsrAcc
+) 
 
-graphDf = filter(graphDf, )
-
+filter(graphDf, grepl('HH', name))
+filter(graphDf, grepl('HL', name))
+filter(graphDf, grepl('LH', name))
+filter(graphDf, grepl('LL', name))
 
 ggplot(graphDf, aes(x=name,y=value,group=group)) +
          geom_line(aes(linetype=group))
@@ -165,33 +167,24 @@ ggplot(graphDf, aes(x=name,y=value,group=group)) +
 
 
 
+source('pltSubAgree.R')
+source('pltAdvsrAcc.R')
 
 
+test = pltSubAgree(0, , F, F) 
 
+test
 
-
-subDf <- pltSubAgree(0, , F, F)  %>%
-  select(1, 3, 5) %>%
-  add_row(value = 1 - subDf$value,
-          name = c('L_HH', 'L_HL', 'L_LH', 'L_LL'))
-subDf
-
-%>%
+subDf <- pltSubAgree(0,'0uk', F, F)  %>%
+  select(1, 3, 5) 
+subDf <- add_row(subDf,value = 1 - subDf$value,
+          name = c('L_HH', 'L_HL', 'L_LH', 'L_LL'),
+          se = subDf$se
+          ) %>%
   mutate(group = 'sub')
 subDf
 
-
-1 - subDf$value
-
-subDf$se[1:4]
-
-
-
-
-
 advsrDf <- pltAdvsrAcc('0uk', F, F)
-
-
 advsrDf = tibble(
   name = c(
     advsrDf$group[nrow(advsrDf) * .25],
