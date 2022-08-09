@@ -133,12 +133,82 @@ dfSubAgree
 dfAdvsrAcc
 graphDf = bind_rows(dfSubAgree,
           dfAdvsrAcc
-) 
+)
 
-filter(graphDf, grepl('HH', name))
-filter(graphDf, grepl('HL', name))
-filter(graphDf, grepl('LH', name))
-filter(graphDf, grepl('LL', name))
+HHdf = filter(graphDf, grepl('HH', name))
+HLdf = filter(graphDf, grepl('HL', name))
+LHdf = filter(graphDf, grepl('LH', name))
+LLdf = filter(graphDf, grepl('LL', name))
+
+
+    width = .8
+    dodgeWidth = .85
+    errWidth = .4
+    errdodgeWidth = .85
+
+testfunc = function(dataset,title) {
+ggplot(dataset, aes(x=name,y=value, group=group)) +
+      geom_line(aes(color=group)) +
+        scale_color_manual(
+        values = c(
+          advsr = 'red',
+          sub = 'blue'
+      ),
+    name = 'Legend',
+    labels = c(
+      'Advisor Accuracy',
+      'Participant Agreement with Advisor'
+    )
+  ) +
+      geom_errorbar(
+        aes(ymin = value - se,
+            ymax = value + se),
+        width = errWidth,
+        #position = position_dodge(errdodgeWidth),
+        colour = "azure4",
+        size = 1
+      ) +
+            labs(title = title,
+           x = 'Advisors Confidence \n(Calibrated/Non-calibrated)',
+           y = 'Proportion of Agreement \nwith Calibrated Advisor') +
+                 scale_x_discrete(
+        limits = c(dataset$name[1],
+                   dataset$name[2])
+      ) +
+      theme_bw() +
+      theme(
+        plot.title = element_text(size = 15),
+        plot.title.position = 'panel',
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        #legend.position = 'none',
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        axis.text = element_text(size = 15),
+        axis.title = element_text(size = 15),
+        axis.line = element_line(colour = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()
+      )
+
+}
+
+HHdf = filter(graphDf, grepl('HH', name))
+HLdf = filter(graphDf, grepl('HL', name))
+LHdf = filter(graphDf, grepl('LH', name))
+LLdf = filter(graphDf, grepl('LL', name))
+testfunc(HHdf,'Advisor Accuracy and Subject Agreement for trials when Calibrated Advsr has HIGH confidence, and Un-calibrated Advsr has HIGH confidence')
+testfunc(HLdf,'Advisor Accuracy and Subject Agreement for trials when Calibrated Advsr has HIGH confidence, and Un-calibrated Advsr has LOW confidence')
+testfunc(LHdf,'Advisor Accuracy and Subject Agreement for trials when Calibrated Advsr has LOW confidence, and Un-calibrated Advsr has HIGH confidence')
+testfunc(LLdf,'Advisor Accuracy and Subject Agreement for trials when Calibrated Advsr has LOW confidence, and Un-calibrated Advsr has LOW confidence')
+
+
+
+
+
+
+
 
 ggplot(graphDf, aes(x=name,y=value,group=group)) +
          geom_line(aes(linetype=group))

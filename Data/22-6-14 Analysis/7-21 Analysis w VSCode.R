@@ -1,6 +1,6 @@
 #====
 #Read in data
-startup <- function() {
+  startup <- function() {
   renv::isolate()
   packages =
     c('Rmisc', 'tidyverse', 'Cairo', 'dqrng', 'readr', 'ggthemes')
@@ -14,7 +14,7 @@ startup <- function() {
 }
 startup()
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-#rm(list = ls())
+rm(list = ls())
 data <- read_csv(
   "22-5-4 to 22-5-4 Data.csv",
   col_types = cols(
@@ -25,8 +25,7 @@ data <- read_csv(
     p1conf = col_integer(),
     p2conf = col_integer(),
     p1rslt = col_integer(),
-    p2rslt = col_integer(),
-    ... 11 = col_skip() #the ...11 needs to be adjacent
+    p2rslt = col_integer()
   )
 ) %>%
   mutate(correct = as.integer(correct))
@@ -67,17 +66,9 @@ pltSubAgree(0,, F, F)
 
 source('pltAdvsrAcc.R')
 pltAdvsrAcc('pj7', F, F)
-pltAdvsrAcc(, T, F)
+pltAdvsrAcc(, F, F)
 
-rnor
-testvar <- 'asdf'
-testvar2 <- c(1, 2, 3)
-#install.packages('httpgd')
-r.debugger.updateRPackage
-rno
-library(vscDebugger)
-rnorm(1)
-help()
-qwer <- 3
-quit()
-rnorm(2,1)
+
+
+
+
