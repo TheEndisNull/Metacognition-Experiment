@@ -207,7 +207,12 @@ testfunc(LLdf,'Advisor Accuracy and Subject Agreement for trials when Calibrated
 
 
 
+# Stacked
 
+filter(LLdf, group=='sub')
+ggplot(filter(LLdf, group=='sub'), aes(fill=name, y=value, x=group)) + 
+    geom_bar(position="fill", stat="identity")
+testfunc(HHdf,'Advisor Accuracy and Subject Agreement for trials when Calibrated Advsr has HIGH confidence, and Un-calibrated Advsr has HIGH confidence')
 
 
 ggplot(graphDf, aes(x=name,y=value,group=group)) +
