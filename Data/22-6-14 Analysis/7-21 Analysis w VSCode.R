@@ -62,7 +62,7 @@ data <- bind_rows(
 source('pltSubAgree.R')
 pltSubAgree(0, 'pj7', F, F)
 pltSubAgree(1, 'pj7', F, F)
-pltSubAgree(0,, F, F)
+pltSubAgree(1,, F, F)
 
 source('pltAdvsrAcc.R')
 pltAdvsrAcc('pj7', F, F)
