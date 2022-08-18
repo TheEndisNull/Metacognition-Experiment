@@ -26,7 +26,7 @@ data <- read_csv(
     p2conf = col_integer(),
     p1rslt = col_integer(),
     p2rslt = col_integer(),
-    ... 11 = col_skip() #the ...11 needs to be adjacent
+    ...11 = col_skip() #the ...11 needs to be adjacent
   )
 ) %>%
   mutate(correct = as.integer(correct))
@@ -69,6 +69,8 @@ source('pltAdvsrAcc.R')
 pltAdvsrAcc('pj7', F, F)
 pltAdvsrAcc(, T, F)
 
+source('pltAdvsrAccSubtract.R')
+pltAdvsrAccSubtracted('all',T,F)
 rnor
 testvar <- 'asdf'
 testvar2 <- c(1, 2, 3)
