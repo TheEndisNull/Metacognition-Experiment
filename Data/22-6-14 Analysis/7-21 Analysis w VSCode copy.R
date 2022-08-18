@@ -1,6 +1,6 @@
 #====
 #Read in data
-  startup <- function() {
+startup <- function() {
   renv::isolate()
   packages =
     c('Rmisc', 'tidyverse', 'Cairo', 'dqrng', 'readr', 'ggthemes')
@@ -14,7 +14,7 @@
 }
 startup()
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-rm(list = ls())
+#rm(list = ls())
 data <- read_csv(
   "22-5-4 to 22-5-4 Data.csv",
   col_types = cols(
@@ -26,7 +26,7 @@ data <- read_csv(
     p2conf = col_integer(),
     p1rslt = col_integer(),
     p2rslt = col_integer(),
-    ... 11 = col_skip() #the ...11 needs to be adjacent
+    ...11 = col_skip() #the ...11 needs to be adjacent
   )
 ) %>%
   mutate(correct = as.integer(correct))
@@ -63,7 +63,7 @@ data <- bind_rows(
 source('pltSubAgree.R')
 pltSubAgree(0, 'pj7', F, F)
 pltSubAgree(1, 'pj7', F, F)
-pltSubAgree(1,, F, F)
+pltSubAgree(0,, F, F)
 
 source('pltAdvsrAcc.R')
 pltAdvsrAcc('pj7', F, F)
