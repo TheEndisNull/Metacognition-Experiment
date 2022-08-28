@@ -108,9 +108,9 @@ plt = ggplot(pltDf,
   labs(
     title = pltTitle,
     x = "Trial Number",
-    y = "Proportion Correct"
+    y = "Difference from \nexpected accuracy"
   ) +
-  coord_cartesian(ylim = c(-.75, .75),
+  coord_cartesian(ylim = c(-.3, .3),
                   xlim = c(0, 500)) +
   geom_ribbon(aes(ymin=winRate-sd, ymax=winRate+sd),fill='lightgrey',alpha=.7)+
   geom_line() +
@@ -142,20 +142,22 @@ if (CairoPlt == T) {
   print(plt)
 }
 
-#print(df)
-#print(pltDf)
-return(pltDf)
+
 
 if (savePlt == T) {
   ggsave(
     plt,
-    filename = paste0('AvdPlt', subject, '.png'),
+    filename = paste0('AvdPltSubtracted', subject, '.png'),
     dpi = 300,
     type = "cairo",
     width = 8.25,
-    height = 4.4,
+    height = 6,
     units = "in"
   )
 }
+
+#print(df)
+#print(pltDf)
+return(pltDf)
 
 }

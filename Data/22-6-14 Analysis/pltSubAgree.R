@@ -62,8 +62,7 @@ pltSubAgree <-
         width = width,
         position = position_dodge(dodgeWidth),
         color = 'black'
-      ) +
-      
+      ) +      
       geom_errorbar(
         aes(ymin = value - se,
             ymax = value + se),
@@ -78,8 +77,7 @@ pltSubAgree <-
       coord_cartesian(ylim = c(0, 1)) +
       labs(title = pltTitle,
            x = 'Advisors Confidence \n(Calibrated/Non-calibrated)',
-           y = 'Proportion of Agreement \nwith Calibrated Advisor') +
-      
+           y = 'Proportion of Agreement \nwith Calibrated Advisor') +      
       scale_fill_manual(values = c(
         H_HL = 'blue',
         H_HH = 'red',
@@ -125,13 +123,13 @@ pltSubAgree <-
     if (savePlt == T) {
       ggsave(
         plt,
-        filename = paste0('pAgree.png'),
+        filename = paste0('pAgree ',subject,'.png'),
         dpi = 300,
         type = "cairo",
-        width = 8.25,
+        width = 5,
         height = 4.4,
         units = "in"
       )
     }
-    return(graphdf)
+    return(graphdf)# change to graphdf or plt
   }

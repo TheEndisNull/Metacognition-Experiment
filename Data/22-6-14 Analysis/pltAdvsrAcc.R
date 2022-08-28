@@ -131,20 +131,20 @@ if (CairoPlt == T) {
   print(plt)
 }
 
-#print(df)
-#print(pltDf)
-return(pltDf)
-
 if (savePlt == T) {
   ggsave(
     plt,
-    filename = paste0('AvdPlt', subject, '.png'),
+    filename = paste0('AdvPlt ', subject, '.png'),
     dpi = 300,
     type = "cairo",
     width = 8.25,
-    height = 4.4,
+    height = 3,
     units = "in"
   )
 }
+
+#print(df)
+#print(pltDf)
+return(pltDf)
 
 }

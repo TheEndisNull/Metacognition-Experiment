@@ -3,7 +3,7 @@
   startup <- function() {
   renv::isolate()
   packages =
-    c('Rmisc', 'tidyverse', 'Cairo', 'dqrng', 'readr', 'ggthemes')
+    c('Rmisc', 'tidyverse', 'Cairo', 'dqrng', 'readr', 'ggthemes','patchwork')
   knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
   installed_packages <- packages %in% rownames(installed.packages())
   if (any(installed_packages == FALSE)) {
@@ -59,18 +59,39 @@ data <- bind_rows(
 
 #====
 #(0-adv different, 1-adv same, subID,CairoWindow, Save plot)
-
+sublist <- c('0uk', 'aya', 'ga4','btm','bsp','ht1','pj7','ynb','f88','all')
+source('multiplot.R')
 source('pltSubAgree.R')
-pltSubAgree(0, 'pj7', F, F)
+pltSubAgree(0, 'pj7', F, T)
 pltSubAgree(1, 'pj7', F, F)
 pltSubAgree(1,, F, F)
 
+pltSubAgree(0, sublist[10], T, T)
+
+for(i in 1:10) {
+pltSubAgree(1, sublist[i], T, T)
+}
+###################################################################
+source('pltAgreeByBin.R')
+pltAgreeByCond('HH', T, T) 
+pltAgreeByCond('HL', T, T) 
+pltAgreeByCond('LH', T, T) 
+pltAgreeByCond('LL', T, T) 
+  
+
 source('pltAdvsrAcc.R')
-pltAdvsrAcc('pj7', F, F)
+for(i in 1:10) {
+pltAdvsrAcc(sublist[i], T, T)
+}
+pltAdvsrAcc(sublist[10], T, T)
 pltAdvsrAcc(, T, F)
 
+pltAdvsrAccSubtracted(sublist[10],T,T)
+
 source('pltAdvsrAccSubtract.R')
-pltAdvsrAccSubtracted('all',T,F)
+for(i in 1:10) {
+pltAdvsrAccSubtracted(sublist[i],T,T)
+}
 rnor
 testvar <- 'asdf'
 testvar2 <- c(1, 2, 3)
